@@ -16,6 +16,9 @@ ratio = image.shape[0] / 500.0
 orig = image.copy()
 image = imutils.resize(image, height = 500)
 
+height = image.shape[0]
+width = image.shape[1]
+
 # convert the image to grayscale, blur it, and find edges
 # in the image
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -32,6 +35,7 @@ cnts = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 cnts = imutils.grab_contours(cnts)
 cnts = sorted(cnts, key = cv2.contourArea, reverse = True)[:5]
 
+screenCnt = None
 # loop over the contours
 for c in cnts:
 	# approximate the contour
@@ -41,6 +45,16 @@ for c in cnts:
 	if len(approx) == 4:
 		screenCnt = approx
 		break
+
+if screenCnt is None:
+	screenCnt = np.array(
+		[
+		[[0,0]],
+		[[0, height]],
+		[[width, height]], 
+		[[width, 0]]
+	]
+	)
 
 print("STEP 2: Find contours of paper")
 cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 2)
